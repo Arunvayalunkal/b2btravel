@@ -48,7 +48,9 @@
             	<div class="mob-nav-head">
                 	<div class="row">
                     	<div class="col-2">
-                    	  <div class="nav-btn"><img src="images/hamburger-menu.svg" height="30"></div></div>
+                    	  <button class="navbar-toggler mobile-menu-toggle" type="button" aria-controls="portalNav" aria-expanded="false" aria-label="Toggle navigation">
+         <img src="images/hamburger-menu.svg" height="30">
+        </button></div>
                         <div class="col-10">
                         <div class="m-head-nav"><a href="#">Support </a>  <span class="devider">|</span>   <strong>Cash Bal: Rs.0.00</strong>   <span class="devider">|</span>   <a href="#">Recharge</a>   </div> 
                         </div>
@@ -109,11 +111,7 @@
               </div>
             </li>
             <li class="nav-item dropdown portal-item">
-              <button class="nav-link portal-trigger" data-menu="rail"><span class="bta-icons bta-icon-rail"></span><span>Rail</span><i class="fa-solid fa-chevron-down chevron"></i></button>
-              <div class="portal-dropdown compact-dropdown" data-panel="rail">
-                <a class="dropdown-entry" href="#"><i class="fa-solid fa-magnifying-glass"></i> Search Trains</a>
-                <a class="dropdown-entry" href="#"><i class="fa-solid fa-clock-rotate-left"></i> Booking History</a>
-              </div>
+              <button class="nav-link portal-trigger" data-menu="rail" onclick="window.location.href='../Rail/index.html';"><span class="bta-icons bta-icon-rail"></span><span>Rail</span></button>
             </li>
             <li class="nav-item dropdown portal-item">
               <button class="nav-link portal-trigger" data-menu="bus"><span class="bta-icons bta-icon-bus"></span><span>Bus</span><i class="fa-solid fa-chevron-down chevron"></i></button>
@@ -221,7 +219,7 @@ Document <i class="fa-solid fa-chevron-right ms-auto"></i></button><div class="n
                                         </div>
                    		
                         
-                         <button class="btn btn-lg red-btn search-btn text-white">Submit</button>
+                         <button class="btn btn-lg red-btn search-btn text-white" onclick="window.location.href='visa-list.html';">Submit</button>
                    </div>
                   
                    <!--search-con ends here-->

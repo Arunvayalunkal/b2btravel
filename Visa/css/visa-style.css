@@ -1333,6 +1333,6 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ff978f', end
 .dwn-chklist-btn:hover{
 	color:#F51253;
 }
-.nav-link.active:hover{
+.inner-con .nav-link.active:hover{
 	color:#fff !important;
 }
