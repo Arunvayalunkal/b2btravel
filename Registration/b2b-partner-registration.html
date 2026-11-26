@@ -63,6 +63,19 @@ input[type=range]{accent-color:var(--brand)}
 .agreement h6{color:var(--brand);font-weight:700;font-size:.9rem;margin:.9rem 0}
 .accept-box{border:2px solid #b9c9ee;border-radius:12px;padding:1rem;font-size:.88rem}
 .is-invalid-lite{border-color:var(--red)!important}
+.btn-scan{background:#fff;border:1px solid #d5dbe6;color:var(--brand);font-weight:600;border-radius:0 10px 10px 0;white-space:nowrap}
+.btn-scan:hover{background:#e8effd;color:var(--brand);border-color:#9db8f0}
+.input-group>.form-control.text-uppercase{border-radius:10px 0 0 10px}
+.scan-stage{background:#0b1220;border-radius:12px;min-height:240px;display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative}
+.scan-stage video,.scan-stage img{width:100%;max-height:340px;object-fit:contain;display:block}
+.scan-frame{position:absolute;inset:14% 8%;border:2px dashed rgba(255,255,255,.75);border-radius:10px;pointer-events:none}
+.scan-hint{color:#cdd6ea;font-size:.85rem;text-align:center;padding:1rem}
+.scan-opt{border:2px solid #dbe3f3;border-radius:12px;padding:.9rem 1rem;background:#fff;width:100%;text-align:left;display:flex;gap:.8rem;align-items:center;font-size:.9rem}
+.scan-opt:hover{border-color:#9db8f0;background:#f6f9ff}
+.scan-opt .ico{width:40px;height:40px;border-radius:50%;background:#e8effd;color:var(--brand);display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex:none}
+.scan-opt small{display:block;color:#667;font-size:.78rem}
+.referral-box{border:2px solid #9db8f0;background:#eaf0fd;border-radius:12px;padding:1.2rem}
+.referral-box h6{color:var(--brand);font-weight:700;margin:0}
 </style>
 </head>
 <body>
@@ -111,8 +124,11 @@ input[type=range]{accent-color:var(--brand)}
 
       <div class="mb-4">
         <label class="form-label" for="pan">PAN Number</label>
-        <input type="text" id="pan" class="form-control text-uppercase" placeholder="ABCDE1234F" maxlength="10">
-        <div class="form-text">Name and DOB will be auto-fetched from PAN database</div>
+        <div class="input-group">
+          <input type="text" id="pan" class="form-control text-uppercase" placeholder="ABCDE1234F" maxlength="10">
+          <button type="button" class="btn btn-scan px-3" id="btnScan" data-bs-toggle="modal" data-bs-target="#scanModal"><i class="bi bi-upc-scan me-2"></i>Scan PAN card</button>
+        </div>
+        <div class="form-text" id="panHelp">Type your PAN or scan the card. Name and DOB will be auto-fetched from PAN database</div>
       </div>
 
       <div class="mb-4">
@@ -165,8 +181,26 @@ input[type=range]{accent-color:var(--brand)}
           <input type="range" class="form-range" id="flt" min="0" max="100" value="70">
           <div class="d-flex justify-content-between"><span class="lbl-l">Flight <span id="fltV">70</span>%</span><span class="lbl-r">Other <span id="othV">30</span>%</span></div></div>
         <div class="col-md-6"></div>
-        <div class="col-12"><label class="form-label">How did you hear about us?</label>
-          <select class="form-select req"><option value="">Select source</option><option>Google Search</option><option>Social Media</option><option>Referral</option><option>Event / Exhibition</option><option>Other</option></select></div>
+        <div class="col-12"><label class="form-label" for="source">How did you hear about us?</label>
+          <select class="form-select req" id="source"><option value="">Select source</option><option>Online Platform</option><option>Sales Representative</option><option>Agency Referrals</option></select></div>
+
+        <div class="col-12 d-none" id="referralWrap">
+          <div class="referral-box">
+            <h6><i class="bi bi-people me-2"></i>Agency referral</h6>
+            <small class="text-secondary d-block mb-3">Tell us which agency referred you so they receive credit for the introduction</small>
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label class="form-label" for="refAgency">Referring agency name</label>
+                <input type="text" id="refAgency" class="form-control" placeholder="Name of the agency that referred you">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label" for="refCode">Referral code / Agent ID <span class="text-secondary fw-normal">(optional)</span></label>
+                <input type="text" id="refCode" class="form-control text-uppercase" placeholder="e.g. B2B-12345" maxlength="20">
+              </div>
+            </div>
+            <div class="form-text mt-2" id="refNote"></div>
+          </div>
+        </div>
       </div>
     </section>
 
@@ -205,6 +239,39 @@ input[type=range]{accent-color:var(--brand)}
     </div>
   </div>
 </main>
+
+<!-- Scan PAN modal -->
+<div class="modal fade" id="scanModal" tabindex="-1" aria-labelledby="scanTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content" style="border-radius:16px">
+      <div class="modal-header border-0 pb-0">
+        <h5 class="modal-title fw-bold" id="scanTitle" style="color:var(--brand)">Scan your PAN card</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div id="scanChoose" class="d-grid gap-3">
+          <button type="button" class="scan-opt" id="optCamera"><span class="ico"><i class="bi bi-camera"></i></span><span><b>Use camera</b><small>Hold the card inside the frame</small></span></button>
+          <button type="button" class="scan-opt" id="optUpload"><span class="ico"><i class="bi bi-upload"></i></span><span><b>Upload a photo</b><small>JPG or PNG of the front of your PAN card</small></span></button>
+          <input type="file" id="scanFile" accept="image/*" capture="environment" class="d-none">
+          <div class="form-text"><i class="bi bi-lock me-1"></i>The image is read on your device and is not uploaded.</div>
+        </div>
+
+        <div id="scanStageWrap" class="d-none">
+          <div class="scan-stage">
+            <video id="scanVideo" playsinline muted class="d-none"></video>
+            <div class="scan-frame d-none" id="scanFrame"></div>
+            <img id="scanPreview" class="d-none" alt="Captured PAN card">
+          </div>
+          <div id="scanStatus" class="form-text mt-2" role="status" aria-live="polite"></div>
+          <div class="d-flex justify-content-between mt-3">
+            <button type="button" class="btn-back" id="scanRetry"><i class="bi bi-arrow-left me-2"></i>Choose another way</button>
+            <button type="button" class="btn btn-brand" id="scanCapture"><i class="bi bi-camera me-2"></i>Capture</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
@@ -265,6 +332,115 @@ $(function () {
     gstChoice = $(this).data('val'); $('#gstField').toggleClass('d-none', gstChoice !== 'yes');
   });
 
+  // ---------- Scan PAN ----------
+  const modalEl = document.getElementById('scanModal');
+  const video = document.getElementById('scanVideo');
+  let stream = null, tessPromise = null;
+
+  function loadTesseract() {
+    if (window.Tesseract) return Promise.resolve();
+    if (!tessPromise) tessPromise = new Promise((res, rej) => {
+      const sc = document.createElement('script');
+      sc.src = 'https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js';
+      sc.onload = res; sc.onerror = () => { tessPromise = null; rej(new Error('load')); };
+      document.head.appendChild(sc);
+    });
+    return tessPromise;
+  }
+  function stopCamera() {
+    if (stream) { stream.getTracks().forEach(t => t.stop()); stream = null; }
+    video.srcObject = null;
+  }
+  function scanReset() {
+    stopCamera();
+    $('#scanChoose').removeClass('d-none'); $('#scanStageWrap').addClass('d-none');
+    $('#scanVideo,#scanFrame,#scanPreview').addClass('d-none');
+    $('#scanStatus').removeClass('text-danger text-success').text('');
+    $('#scanCapture').removeClass('d-none').prop('disabled', false);
+    $('#scanFile').val('');
+  }
+  function showStage() { $('#scanChoose').addClass('d-none'); $('#scanStageWrap').removeClass('d-none'); }
+
+  modalEl.addEventListener('show.bs.modal', scanReset);
+  modalEl.addEventListener('hidden.bs.modal', scanReset);
+  $('#scanRetry').on('click', scanReset);
+
+  if (!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia)) $('#optCamera').addClass('d-none');
+
+  $('#optCamera').on('click', async function () {
+    showStage();
+    $('#scanCapture').removeClass('d-none');
+    $('#scanStatus').text('Starting camera…');
+    try {
+      stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: 'environment' } }, audio: false });
+      video.srcObject = stream; await video.play();
+      $('#scanVideo,#scanFrame').removeClass('d-none');
+      $('#scanStatus').text('Place the PAN card inside the frame, then tap Capture.');
+    } catch (e) {
+      $('#scanStatus').addClass('text-danger').text('Camera not available. Allow camera access, or upload a photo instead.');
+      $('#scanCapture').addClass('d-none');
+    }
+  });
+  $('#optUpload').on('click', () => $('#scanFile').trigger('click'));
+  $('#scanFile').on('change', function () {
+    const f = this.files && this.files[0]; if (!f) return;
+    const url = URL.createObjectURL(f);
+    showStage(); $('#scanCapture').addClass('d-none');
+    readPan(url, () => URL.revokeObjectURL(url));
+  });
+  $('#scanCapture').on('click', function () {
+    const c = document.createElement('canvas');
+    c.width = video.videoWidth; c.height = video.videoHeight;
+    c.getContext('2d').drawImage(video, 0, 0);
+    const url = c.toDataURL('image/jpeg', 0.92);
+    stopCamera(); $('#scanVideo,#scanFrame').addClass('d-none');
+    $(this).addClass('d-none');
+    readPan(url);
+  });
+
+  async function readPan(src, done) {
+    $('#scanPreview').attr('src', src).removeClass('d-none');
+    $('#scanStatus').removeClass('text-danger text-success').html('<span class="spinner-border spinner-border-sm me-2"></span>Reading your PAN card…');
+    try {
+      await loadTesseract();
+      const { data } = await Tesseract.recognize(src, 'eng');
+      const text = (data.text || '').toUpperCase();
+      const m = text.replace(/[^A-Z0-9\n ]/g, '').replace(/ /g, '').match(/[A-Z]{5}[0-9]{4}[A-Z]/);
+      if (m) {
+        $('#pan').val(m[0]).removeClass('is-invalid-lite');
+        $('#panHelp').removeClass('text-danger').addClass('text-success').text('PAN read from card: ' + m[0] + '. Please confirm it is correct.');
+        $('#scanStatus').addClass('text-success').text('PAN found: ' + m[0]);
+        setTimeout(() => bootstrap.Modal.getInstance(modalEl).hide(), 900);
+      } else {
+        $('#scanStatus').addClass('text-danger').text('Could not read a PAN number. Use good light, keep the card flat and try again, or type it in manually.');
+        $('#scanCapture').addClass('d-none');
+      }
+    } catch (e) {
+      $('#scanStatus').addClass('text-danger').text('Scanner could not load (check your connection). Please type your PAN manually.');
+    }
+    if (done) done();
+  }
+  $('#pan').on('input', function () { $('#panHelp').removeClass('text-success').text('Type your PAN or scan the card. Name and DOB will be auto-fetched from PAN database'); });
+
+  // ---------- Agency referral ----------
+  function syncReferral() {
+    const on = $('#source').val() === 'Agency Referrals';
+    $('#referralWrap').toggleClass('d-none', !on);
+    if (!on) $('#refAgency').removeClass('is-invalid-lite');
+  }
+  $('#source').on('change', syncReferral);
+  $('#refCode').on('input', function () { this.value = this.value.toUpperCase(); });
+  // Pre-fill from a shared link, e.g. ?ref=B2B-12345&agency=Skyline%20Travels
+  (function () {
+    const q = new URLSearchParams(location.search);
+    const code = (q.get('ref') || '').trim(), ag = (q.get('agency') || '').trim();
+    if (!code && !ag) return;
+    $('#source').val('Agency Referrals'); syncReferral();
+    if (code) $('#refCode').val(code.toUpperCase().slice(0, 20));
+    if (ag) $('#refAgency').val(ag);
+    $('#refNote').text('Referral details were filled in from the link you opened.');
+  })();
+
   // Step 2 sliders
   $('#dom').on('input', function () { $('#domV').text(this.value); $('#intV').text(100 - this.value); });
   $('#flt').on('input', function () { $('#fltV').text(this.value); $('#othV').text(100 - this.value); });
@@ -286,6 +462,7 @@ $(function () {
       else if (gstChoice === 'yes' && !$('#gst').val().trim()) bad('#gst');
     } else if (step === 2) {
       $('.req').each(function () { if (!$(this).val().trim()) bad(this); });
+      if ($('#source').val() === 'Agency Referrals' && !$('#refAgency').val().trim() && !$('#refCode').val().trim()) bad('#refAgency');
       const em = $('input[type=email]');
       if (em.val() && !/^\S+@\S+\.\S+$/.test(em.val())) bad(em);
     }
