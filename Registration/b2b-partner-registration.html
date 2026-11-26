@@ -74,6 +74,11 @@ input[type=range]{accent-color:var(--brand)}
 .scan-opt:hover{border-color:#9db8f0;background:#f6f9ff}
 .scan-opt .ico{width:40px;height:40px;border-radius:50%;background:#e8effd;color:var(--brand);display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex:none}
 .scan-opt small{display:block;color:#667;font-size:.78rem}
+.rep-choice{border:2px solid #dbe3f3;background:#f6f8fc;border-radius:12px;padding:1.4rem 1rem;text-align:center;cursor:pointer;width:100%;transition:.15s}
+.rep-choice:hover{border-color:#9db8f0}
+.rep-choice i{font-size:1.5rem;display:block;margin-bottom:.4rem;color:#222}
+.rep-choice b{display:block;font-size:.95rem}.rep-choice small{color:#667;font-size:.78rem}
+.rep-choice.selected{border-color:var(--green);background:#f0faf4}
 .referral-box{border:2px solid #9db8f0;background:#eaf0fd;border-radius:12px;padding:1.2rem}
 .referral-box h6{color:var(--brand);font-weight:700;margin:0}
 </style>
@@ -126,9 +131,18 @@ input[type=range]{accent-color:var(--brand)}
         <label class="form-label" for="pan">PAN Number</label>
         <div class="input-group">
           <input type="text" id="pan" class="form-control text-uppercase" placeholder="ABCDE1234F" maxlength="10">
-          <button type="button" class="btn btn-scan px-3" id="btnScan" data-bs-toggle="modal" data-bs-target="#scanModal"><i class="bi bi-upc-scan me-2"></i>Scan PAN card</button>
+          <button type="button" class="btn btn-scan px-3" id="btnScan" data-bs-toggle="modal" data-bs-target="#scanModal" data-scan="pan"><i class="bi bi-upc-scan me-2"></i>Scan PAN card</button>
         </div>
         <div class="form-text" id="panHelp">Type your PAN or scan the card. Name and DOB will be auto-fetched from PAN database</div>
+      </div>
+
+      <div class="mb-4">
+        <label class="form-label" for="passport">Passport Number <span class="text-secondary fw-normal">(optional)</span></label>
+        <div class="input-group">
+          <input type="text" id="passport" class="form-control text-uppercase" placeholder="A1234567" maxlength="9">
+          <button type="button" class="btn btn-scan px-3" id="btnScanPassport" data-bs-toggle="modal" data-bs-target="#scanModal" data-scan="passport"><i class="bi bi-upc-scan me-2"></i>Scan passport</button>
+        </div>
+        <div class="form-text" id="passportHelp">Type your passport number or scan the photo page</div>
       </div>
 
       <div class="mb-4">
@@ -184,6 +198,31 @@ input[type=range]{accent-color:var(--brand)}
         <div class="col-12"><label class="form-label" for="source">How did you hear about us?</label>
           <select class="form-select req" id="source"><option value="">Select source</option><option>Online Platform</option><option>Sales Representative</option><option>Agency Referrals</option></select></div>
 
+        <div class="col-12 d-none" id="salesWrap">
+          <hr class="mt-0 mb-4">
+          <div class="row g-3">
+            <div class="col-md-6"><button type="button" class="rep-choice" data-val="qr"><i class="bi bi-qr-code-scan"></i><b>Sales Rep. QR Scan</b><small>Scan to register</small></button></div>
+            <div class="col-md-6"><button type="button" class="rep-choice" data-val="email"><i class="bi bi-link-45deg"></i><b>Sales Representative Email</b><small>Approval link by email</small></button></div>
+          </div>
+
+          <div id="repQr" class="mt-3 d-none">
+            <div class="form-text mb-3">Scan the QR code shown by your Sales Representative (from their TimeLabs HRMS profile) to link this registration to them.</div>
+            <button type="button" class="btn btn-brand" id="btnScanQr" data-bs-toggle="modal" data-bs-target="#scanModal" data-scan="qr"><i class="bi bi-upc-scan me-2"></i>Scan QR code</button>
+            <div id="qrResult" class="form-text mt-2"></div>
+          </div>
+
+          <div id="repEmailBox" class="mt-3 d-none">
+            <div class="form-text mb-3">An approval link will be sent to the Sales Representative's registered email ID.</div>
+            <label class="form-label" for="repEmail">Sales Representative Email</label>
+            <div class="d-flex gap-2">
+              <input type="email" id="repEmail" class="form-control" placeholder="representative@company.com">
+              <button type="button" class="btn btn-otp px-4 text-nowrap" id="sendRepEmail" disabled><i class="bi bi-envelope me-2"></i>Send email</button>
+            </div>
+            <div id="repEmailMsg" class="form-text mt-2"></div>
+          </div>
+          <div id="repErr" class="form-text text-danger mt-2 d-none">Link a Sales Representative by QR scan or send the approval email to continue.</div>
+        </div>
+
         <div class="col-12 d-none" id="referralWrap">
           <div class="referral-box">
             <h6><i class="bi bi-people me-2"></i>Agency referral</h6>
@@ -211,12 +250,12 @@ input[type=range]{accent-color:var(--brand)}
       <div class="d-flex justify-content-between align-items-center mb-3">
         <h5 class="fw-bold mb-0" style="color:var(--brand)">AGENCY AGREEMENT</h5>
         <div class="d-flex gap-2">
-          <a href="#" class="btn btn-sm btn-light border"><i class="bi bi-box-arrow-up-right me-1"></i>Open agreement</a>
-          <a href="#" class="btn btn-sm btn-light border"><i class="bi bi-download me-1"></i>Download Word</a>
+          <a href="agency-agreement.pdf" target="_blank" rel="noopener" class="btn btn-sm btn-light border"><i class="bi bi-box-arrow-up-right me-1"></i>Open agreement</a>
+          <a href="agency-agreement.docx" download="Agency-Agreement.docx" class="btn btn-sm btn-light border"><i class="bi bi-download me-1"></i>Download Word</a>
         </div>
       </div>
       <div class="agreement">
-        <h6>AGENCY AGREEMENT</h6><h6>BETWEEN</h6><h6>B2B TRAVEL AGENCY INDIA PVT LTD</h6><h6>AND</h6>
+        <h6>AGENCY AGREEMENT</h6><h6>BETWEEN</h6><h6>B2B TRAVEL.COM</h6><h6>AND</h6>
         <h6>------------------------</h6><h6>INDEX</h6><h6>AGENCY AGREEMENT</h6>
         <p>This B2B Agreement (“Agreement”) is made at Ernakulam on this ___ day of ______, 2025 (“Commencement Date”) between:</p>
         <p>B2B TRAVEL AGENCY INDIA PVT LTD, a company incorporated under the Companies Act, 2013, having its registered office at Thrive Space, 17/2827, Chittethukara, C.S.E.Z P O, Kakkanad, -682037, Kochi, Kerala, India. (which expression shall, unless repugnant to the context thereof, include its successors-in-interest and permitted assigns) represented through it’s authorised officer_______.</p>
@@ -250,8 +289,8 @@ input[type=range]{accent-color:var(--brand)}
       </div>
       <div class="modal-body">
         <div id="scanChoose" class="d-grid gap-3">
-          <button type="button" class="scan-opt" id="optCamera"><span class="ico"><i class="bi bi-camera"></i></span><span><b>Use camera</b><small>Hold the card inside the frame</small></span></button>
-          <button type="button" class="scan-opt" id="optUpload"><span class="ico"><i class="bi bi-upload"></i></span><span><b>Upload a photo</b><small>JPG or PNG of the front of your PAN card</small></span></button>
+          <button type="button" class="scan-opt" id="optCamera"><span class="ico"><i class="bi bi-camera"></i></span><span><b>Use camera</b><small id="optCameraSub">Hold the card inside the frame</small></span></button>
+          <button type="button" class="scan-opt" id="optUpload"><span class="ico"><i class="bi bi-upload"></i></span><span><b>Upload a photo</b><small id="optUploadSub">JPG or PNG of the front of your PAN card</small></span></button>
           <input type="file" id="scanFile" accept="image/*" capture="environment" class="d-none">
           <div class="form-text"><i class="bi bi-lock me-1"></i>The image is read on your device and is not uploaded.</div>
         </div>
@@ -332,22 +371,30 @@ $(function () {
     gstChoice = $(this).data('val'); $('#gstField').toggleClass('d-none', gstChoice !== 'yes');
   });
 
-  // ---------- Scan PAN ----------
+  // ---------- Scanner (PAN / Passport / Sales Rep QR) ----------
   const modalEl = document.getElementById('scanModal');
   const video = document.getElementById('scanVideo');
-  let stream = null, tessPromise = null;
-
-  function loadTesseract() {
-    if (window.Tesseract) return Promise.resolve();
-    if (!tessPromise) tessPromise = new Promise((res, rej) => {
-      const sc = document.createElement('script');
-      sc.src = 'https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js';
-      sc.onload = res; sc.onerror = () => { tessPromise = null; rej(new Error('load')); };
+  let stream = null, scanMode = 'pan', qrRaf = null;
+  const libs = {};
+  const MODES = {
+    pan:      { title: 'Scan your PAN card', cam: 'Hold the card inside the frame', up: 'JPG or PNG of the front of your PAN card', hint: 'Place the PAN card inside the frame, then tap Capture.' },
+    passport: { title: 'Scan your passport', cam: 'Show the photo page, with the two text lines at the bottom', up: 'JPG or PNG of the photo page of your passport', hint: 'Fit the photo page inside the frame, including the two lines of text at the bottom, then tap Capture.' },
+    qr:       { title: 'Scan Sales Representative QR', cam: 'Point the camera at the QR code', up: 'A screenshot or photo of the QR code', hint: 'Point the camera at the QR code. It scans automatically.' }
+  };
+  function loadLib(key, url, test) {
+    if (test()) return Promise.resolve();
+    if (!libs[key]) libs[key] = new Promise((res, rej) => {
+      const sc = document.createElement('script'); sc.src = url;
+      sc.onload = res; sc.onerror = () => { libs[key] = null; rej(new Error(key)); };
       document.head.appendChild(sc);
     });
-    return tessPromise;
+    return libs[key];
   }
+  const loadTesseract = () => loadLib('tess', 'https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js', () => window.Tesseract);
+  const loadJsQR = () => loadLib('jsqr', 'https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js', () => window.jsQR);
+
   function stopCamera() {
+    if (qrRaf) { cancelAnimationFrame(qrRaf); qrRaf = null; }
     if (stream) { stream.getTracks().forEach(t => t.stop()); stream = null; }
     video.srcObject = null;
   }
@@ -356,12 +403,18 @@ $(function () {
     $('#scanChoose').removeClass('d-none'); $('#scanStageWrap').addClass('d-none');
     $('#scanVideo,#scanFrame,#scanPreview').addClass('d-none');
     $('#scanStatus').removeClass('text-danger text-success').text('');
-    $('#scanCapture').removeClass('d-none').prop('disabled', false);
+    $('#scanCapture').removeClass('d-none');
     $('#scanFile').val('');
   }
   function showStage() { $('#scanChoose').addClass('d-none'); $('#scanStageWrap').removeClass('d-none'); }
+  function closeModal(delay) { setTimeout(() => { const m = bootstrap.Modal.getInstance(modalEl); if (m) m.hide(); }, delay || 0); }
 
-  modalEl.addEventListener('show.bs.modal', scanReset);
+  modalEl.addEventListener('show.bs.modal', function (e) {
+    scanMode = (e.relatedTarget && e.relatedTarget.dataset.scan) || 'pan';
+    scanReset();
+    const m = MODES[scanMode];
+    $('#scanTitle').text(m.title); $('#optCameraSub').text(m.cam); $('#optUploadSub').text(m.up);
+  });
   modalEl.addEventListener('hidden.bs.modal', scanReset);
   $('#scanRetry').on('click', scanReset);
 
@@ -369,13 +422,14 @@ $(function () {
 
   $('#optCamera').on('click', async function () {
     showStage();
-    $('#scanCapture').removeClass('d-none');
+    $('#scanCapture').toggleClass('d-none', scanMode === 'qr');
     $('#scanStatus').text('Starting camera…');
     try {
       stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: 'environment' } }, audio: false });
       video.srcObject = stream; await video.play();
       $('#scanVideo,#scanFrame').removeClass('d-none');
-      $('#scanStatus').text('Place the PAN card inside the frame, then tap Capture.');
+      $('#scanStatus').text(MODES[scanMode].hint);
+      if (scanMode === 'qr') { try { await loadJsQR(); qrLoop(); } catch (e) { $('#scanStatus').addClass('text-danger').text('QR scanner could not load. Check your connection and try again.'); } }
     } catch (e) {
       $('#scanStatus').addClass('text-danger').text('Camera not available. Allow camera access, or upload a photo instead.');
       $('#scanCapture').addClass('d-none');
@@ -386,47 +440,116 @@ $(function () {
     const f = this.files && this.files[0]; if (!f) return;
     const url = URL.createObjectURL(f);
     showStage(); $('#scanCapture').addClass('d-none');
-    readPan(url, () => URL.revokeObjectURL(url));
+    handleImage(url, () => URL.revokeObjectURL(url));
   });
   $('#scanCapture').on('click', function () {
     const c = document.createElement('canvas');
     c.width = video.videoWidth; c.height = video.videoHeight;
     c.getContext('2d').drawImage(video, 0, 0);
     const url = c.toDataURL('image/jpeg', 0.92);
-    stopCamera(); $('#scanVideo,#scanFrame').addClass('d-none');
-    $(this).addClass('d-none');
-    readPan(url);
+    stopCamera(); $('#scanVideo,#scanFrame').addClass('d-none'); $(this).addClass('d-none');
+    handleImage(url);
   });
 
-  async function readPan(src, done) {
+  function handleImage(src, done) {
     $('#scanPreview').attr('src', src).removeClass('d-none');
-    $('#scanStatus').removeClass('text-danger text-success').html('<span class="spinner-border spinner-border-sm me-2"></span>Reading your PAN card…');
+    const p = scanMode === 'qr' ? readQrImage(src) : readText(src);
+    Promise.resolve(p).finally(() => done && done());
+  }
+  function fail(msg) { $('#scanStatus').removeClass('text-success').addClass('text-danger').text(msg); }
+
+  // --- QR ---
+  function qrLoop() {
+    if (!stream) return;
+    if (video.readyState >= 2 && video.videoWidth) {
+      const w = Math.min(640, video.videoWidth), h = Math.round(video.videoHeight * w / video.videoWidth);
+      const c = document.createElement('canvas'); c.width = w; c.height = h;
+      const x = c.getContext('2d', { willReadFrequently: true }); x.drawImage(video, 0, 0, w, h);
+      const d = x.getImageData(0, 0, w, h), r = window.jsQR(d.data, w, h);
+      if (r && r.data) { onQr(r.data); return; }
+    }
+    qrRaf = requestAnimationFrame(qrLoop);
+  }
+  async function readQrImage(src) {
+    $('#scanStatus').removeClass('text-danger text-success').html('<span class="spinner-border spinner-border-sm me-2"></span>Reading QR code…');
+    try {
+      await loadJsQR();
+      const img = await new Promise((res, rej) => { const i = new Image(); i.onload = () => res(i); i.onerror = rej; i.src = src; });
+      const c = document.createElement('canvas'), k = Math.min(1, 1200 / Math.max(img.width, img.height));
+      c.width = Math.round(img.width * k); c.height = Math.round(img.height * k);
+      const x = c.getContext('2d', { willReadFrequently: true }); x.drawImage(img, 0, 0, c.width, c.height);
+      const d = x.getImageData(0, 0, c.width, c.height), r = window.jsQR(d.data, c.width, c.height);
+      if (r && r.data) onQr(r.data); else fail('No QR code found in that image. Try a clearer photo or use the camera.');
+    } catch (e) { fail('QR scanner could not load. Check your connection and try again.'); }
+  }
+  let repLinked = null;
+  function onQr(val) {
+    stopCamera();
+    repLinked = String(val).trim();
+    const shown = repLinked.length > 60 ? repLinked.slice(0, 57) + '…' : repLinked;
+    $('#qrResult').removeClass('text-danger').addClass('text-success').text('Linked to Sales Representative: ' + shown);
+    $('#repErr').addClass('d-none'); $('.rep-choice').removeClass('is-invalid-lite');
+    $('#scanStatus').addClass('text-success').text('QR code scanned.');
+    closeModal(500);
+  }
+
+  // --- PAN / Passport text ---
+  async function readText(src) {
+    $('#scanPreview').attr('src', src).removeClass('d-none');
+    $('#scanStatus').removeClass('text-danger text-success').html('<span class="spinner-border spinner-border-sm me-2"></span>Reading your ' + (scanMode === 'pan' ? 'PAN card' : 'passport') + '…');
     try {
       await loadTesseract();
       const { data } = await Tesseract.recognize(src, 'eng');
-      const text = (data.text || '').toUpperCase();
-      const m = text.replace(/[^A-Z0-9\n ]/g, '').replace(/ /g, '').match(/[A-Z]{5}[0-9]{4}[A-Z]/);
-      if (m) {
+      const raw = (data.text || '').toUpperCase();
+      if (scanMode === 'pan') {
+        const m = raw.replace(/[^A-Z0-9\n ]/g, '').replace(/ /g, '').match(/[A-Z]{5}[0-9]{4}[A-Z]/);
+        if (!m) return fail('Could not read a PAN number. Use good light, keep the card flat and try again, or type it in manually.');
         $('#pan').val(m[0]).removeClass('is-invalid-lite');
         $('#panHelp').removeClass('text-danger').addClass('text-success').text('PAN read from card: ' + m[0] + '. Please confirm it is correct.');
         $('#scanStatus').addClass('text-success').text('PAN found: ' + m[0]);
-        setTimeout(() => bootstrap.Modal.getInstance(modalEl).hide(), 900);
       } else {
-        $('#scanStatus').addClass('text-danger').text('Could not read a PAN number. Use good light, keep the card flat and try again, or type it in manually.');
-        $('#scanCapture').addClass('d-none');
+        const squashed = raw.replace(/\s/g, '');
+        let m = squashed.match(/([A-Z][0-9]{7})<[0-9][A-Z]{3}/);          // machine-readable line
+        if (!m) m = raw.match(/\b([A-Z][0-9]{7})\b/);                      // printed number
+        if (!m) return fail('Could not read the passport number. Include the photo page with the two text lines at the bottom, or type it in manually.');
+        $('#passport').val(m[1]).removeClass('is-invalid-lite');
+        $('#passportHelp').removeClass('text-danger').addClass('text-success').text('Passport number read: ' + m[1] + '. Please confirm it is correct.');
+        $('#scanStatus').addClass('text-success').text('Passport number found: ' + m[1]);
       }
-    } catch (e) {
-      $('#scanStatus').addClass('text-danger').text('Scanner could not load (check your connection). Please type your PAN manually.');
-    }
-    if (done) done();
+      closeModal(900);
+    } catch (e) { fail('Scanner could not load (check your connection). Please type it in manually.'); }
   }
   $('#pan').on('input', function () { $('#panHelp').removeClass('text-success').text('Type your PAN or scan the card. Name and DOB will be auto-fetched from PAN database'); });
+  $('#passport').on('input', function () { this.value = this.value.toUpperCase(); $('#passportHelp').removeClass('text-success text-danger').text('Type your passport number or scan the photo page'); });
+
+  // ---------- Sales representative (QR / email) ----------
+  let repEmailSent = false;
+  $('.rep-choice').on('click', function () {
+    const v = $(this).data('val');
+    $('.rep-choice').removeClass('selected is-invalid-lite'); $(this).addClass('selected');
+    $('#repQr').toggleClass('d-none', v !== 'qr'); $('#repEmailBox').toggleClass('d-none', v !== 'email');
+    $('#repErr').addClass('d-none');
+  });
+  const emailOk = v => /^\S+@\S+\.\S+$/.test(v);
+  $('#repEmail').on('input', function () {
+    repEmailSent = false; $('#repEmailMsg').text('').removeClass('text-success text-danger');
+    $('#sendRepEmail').prop('disabled', !emailOk(this.value.trim())).html('<i class="bi bi-envelope me-2"></i>Send email');
+  });
+  $('#sendRepEmail').on('click', function () {
+    const v = $('#repEmail').val().trim(); if (!emailOk(v)) return;
+    // TODO: call your backend here to email the approval link
+    repEmailSent = true;
+    $('#repEmailMsg').removeClass('text-danger').addClass('text-success').text('Approval link sent to ' + v + '. Ask your Sales Representative to approve it.');
+    $(this).html('<i class="bi bi-envelope me-2"></i>Resend email');
+    $('#repErr').addClass('d-none'); $('.rep-choice').removeClass('is-invalid-lite');
+  });
 
   // ---------- Agency referral ----------
   function syncReferral() {
-    const on = $('#source').val() === 'Agency Referrals';
-    $('#referralWrap').toggleClass('d-none', !on);
-    if (!on) $('#refAgency').removeClass('is-invalid-lite');
+    const v = $('#source').val();
+    $('#referralWrap').toggleClass('d-none', v !== 'Agency Referrals');
+    $('#salesWrap').toggleClass('d-none', v !== 'Sales Representative');
+    if (v !== 'Agency Referrals') $('#refAgency').removeClass('is-invalid-lite');
   }
   $('#source').on('change', syncReferral);
   $('#refCode').on('input', function () { this.value = this.value.toUpperCase(); });
@@ -458,12 +581,15 @@ $(function () {
       if (!/^[A-Z]{5}[0-9]{4}[A-Z]$/.test($('#pan').val())) bad('#pan');
       if ($('#mobile').val().length !== 10) bad('#mobile');
       if (!otpVerified) { bad('#otp'); if ($('#otpRow').hasClass('d-none')) bad('#mobile'); }
+      const pp = $('#passport').val().trim();
+      if (pp && !/^[A-Z0-9]{6,9}$/.test(pp)) { bad('#passport'); $('#passportHelp').addClass('text-danger').text('Enter a valid passport number (6 to 9 letters/digits) or leave it blank.'); }
       if (!gstChoice) bad('.gst-box');
       else if (gstChoice === 'yes' && !$('#gst').val().trim()) bad('#gst');
     } else if (step === 2) {
       $('.req').each(function () { if (!$(this).val().trim()) bad(this); });
+      if ($('#source').val() === 'Sales Representative' && !repLinked && !repEmailSent) { bad('.rep-choice'); $('#repErr').removeClass('d-none'); }
       if ($('#source').val() === 'Agency Referrals' && !$('#refAgency').val().trim() && !$('#refCode').val().trim()) bad('#refAgency');
-      const em = $('input[type=email]');
+      const em = $('input[type=email]').not('#repEmail');
       if (em.val() && !/^\S+@\S+\.\S+$/.test(em.val())) bad(em);
     }
     return ok;
