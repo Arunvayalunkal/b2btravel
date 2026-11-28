@@ -56,20 +56,18 @@ p{
 	color:#fff !important;
 }
 .red-btn{
-	background: rgb(96,17,17);
-    background: linear-gradient(0deg, rgba(96,17,17,1) 0%, rgba(192,33,34,1) 100%);
+	background: #eb1934;
+   
 	color:#fff;
 	padding:10px 30px;
 	border:0px;
 }
 .red-btn:hover{
-	background: rgb(96,17,17);
-    background: linear-gradient(0deg, rgba(96,17,17,1) 0%, rgba(192,33,34,1) 100%);
+	background: #eb1934;
 	color:#fff !important;
 }
 .red-btn:focus{
-	background: rgb(96,17,17);
-    background: linear-gradient(0deg, rgba(96,17,17,1) 0%, rgba(192,33,34,1) 100%);
+	background: #eb1934;
 	color:#fff !important;
 }
 .white-btn{
